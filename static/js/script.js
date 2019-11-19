@@ -1,167 +1,428 @@
-
-
-
-
-
-
-
-
-//This is cities collection
-var cities = [{
-  city: 'India',
-  desc: 'The Indian economy is the worlds seventh-largest by nominal GDP and third-largest by purchasing power parity (PPP).',
-  lat: 23.200000,
-  long: 79.225487,
-  img:"http://trrp.net/wordterrain/wp-content/uploads/2017/06/DSC0080Trinity-Dam-Lake-Alps.jpg"
-}, {
-  city: 'New Delhi',
-  desc: 'Delhi, officially the National Capital Territory of Delhi, is the Capital territory of India. It has a population of about 11 million and a metropolitan population of about 16.3 million',
-  lat: 28.500000,
-  long: 77.250000,
-  img:"http://trrp.net/wordterrain/wp-content/uploads/2017/06/DSC0080Trinity-Dam-Lake-Alps.jpg"
-}, {
-  city: 'Mumbai',
-  desc: 'Mumbai, formerly called Bombay, is a sprawling, densely populated city on India’s west coast',
-  lat: 19.000000,
-  long: 72.90000,
-  img:"https://i0.wp.com/outoftownblog.com/wp-content/uploads/2018/12/Balanan-Lake-photos-via-FB-Page.jpg?fit=1500%2C996&ssl=1"
-}, {
-  city: 'Kolkata',
-  desc: 'Kolkata is the capital of the Indian state of West Bengal. It is also the commercial capital of East India, located on the east bank of the Hooghly River',
-  lat: 22.500000,
-  long: 88.400000,
-  img:"https://airfraserisland.com.au/wp-content/uploads/2016/06/41.Lake-McKenzie-1024x731@2x.jpg"
-}, {
-  city: 'Chennai    ',
-  desc: 'Chennai holds the colonial past and is an important city of South India. It was previously known as Madras',
-  lat: 13.000000,
-  long: 80.250000,
-  img:"https://d15shllkswkct0.cloudfront.net/wp-content/blogs.dir/1/files/2019/04/lake-4072911_960_720-768x512.jpg"
-}, {
-  city: 'Gorakhpur',
-  desc: 'Gorakhpur also known as Gorakhshpur is a city along the banks of Rapti river in the eastern part of the state of Uttar Pradesh in India, near the Nepal border 273 east of the state capital Lucknow',
-  lat: 26.7588,
-  long: 83.3697,
-  img:"https://images.unsplash.com/photo-1505490096310-204ef067fe6b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
-}];
-
-//Create angular controller.
-var app = angular.module('googleAapApp', []);
-app.controller('googleAapCtrl', function($scope) {
-
-
-
-  $scope.content = "sample"
-  $scope.title = "data"
-
-
-
-  $scope.highlighters = [];
-  $scope.gMap = null;
-  
-  var winInfo = new google.maps.InfoWindow();
-  
-  var googleMapOption = {
-    zoom: 4,
-    center: new google.maps.LatLng(25, 80),
-    mapTypeId: google.maps.MapTypeId.TERRAIN
-  };
-
-  $scope.gMap = new google.maps.Map(document.getElementById('googleMap'), googleMapOption);
-
-  
-
-  var createHighlighter = function(citi) {
-
-
-
-
-
-
-    var citiesInfo = new google.maps.Marker({
-      map: $scope.gMap,
-      position: new google.maps.LatLng(citi.lat, citi.long),
-      title: citi.city,
-      obj:citi
-    });
-
-    citiesInfo.content = '<div>' + citi.desc + '</div>';
-
-    google.maps.event.addListener(citiesInfo, 'click', function() {
-
-
-      // debugger
-
-
-      document.getElementById("demo2").innerHTML = citiesInfo.obj.desc
-      document.getElementById("demo1").innerHTML = citiesInfo.obj.city
-      document.getElementById("mani").src = citiesInfo.obj.img
-      // debugger
-
-      $scope.content = citiesInfo.content
-      $scope.title = citiesInfo.title
-
-
-      winInfo.setContent('<h1>' + citiesInfo.title + '</h1>' + citiesInfo.content);
-      winInfo.open($scope.gMap, citiesInfo);
-    });
-    $scope.highlighters.push(citiesInfo);
-  };
-
-  for (i = 0; i < cities.length; i++) {
-    createHighlighter(cities[i]);
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+(function($) {
+	
+	"use strict";
+	
+	
+	//Hide Loading Box (Preloader)
+	function handlePreloader() {
+		if($('.preloader').length){
+			$('.preloader').delay(200).fadeOut(500);
+		}
+	}
+	
+	
+	//Update Header Style and Scroll to Top
+	function headerStyle() {
+		if($('.main-header').length){
+			var windowpos = $(window).scrollTop();
+			var siteHeader = $('.main-header');
+			var scrollLink = $('.scroll-to-top');
+			if (windowpos >= 200) {
+				siteHeader.addClass('fixed-header');
+				scrollLink.fadeIn(300);
+			} else {
+				siteHeader.removeClass('fixed-header');
+				scrollLink.fadeOut(300);
+			}
+		}
+	}
+	
+	headerStyle();
+	
+	
+	//Submenu Dropdown Toggle
+	if($('.main-header li.dropdown ul').length){
+		$('.main-header li.dropdown').append('<div class="dropdown-btn"><span class="fa fa-angle-down"></span></div>');
+		
+		//Dropdown Button
+		$('.main-header li.dropdown .dropdown-btn').on('click', function() {
+			$(this).prev('ul').slideToggle(500);
+		});
+		
+		//Disable dropdown parent link
+		$('.main-header .navigation li.dropdown > a,.hidden-bar .side-menu li.dropdown > a').on('click', function(e) {
+			e.preventDefault();
+		});
+	}
+	
+	
+	//Accordion Box
+	if($('.accordion-box').length){
+		$(".accordion-box").on('click', '.acc-btn', function() {
+			
+			var outerBox = $(this).parents('.accordion-box');
+			var target = $(this).parents('.accordion');
+			
+			if($(this).hasClass('active')!==true){
+				$(outerBox).find('.accordion .acc-btn').removeClass('active');
+			}
+			
+			if ($(this).next('.acc-content').is(':visible')){
+				return false;
+			}else{
+				$(this).addClass('active');
+				$(outerBox).children('.accordion').removeClass('active-block');
+				$(outerBox).find('.accordion').children('.acc-content').slideUp(300);
+				target.addClass('active-block');
+				$(this).next('.acc-content').slideDown(300);	
+			}
+		});	
+	}
+	
+	
+	//Progress Bar
+	if($('.progress-line').length){
+		$('.progress-line').appear(function(){
+			var el = $(this);
+			var percent = el.data('width');
+			$(el).css('width',percent+'%');
+		},{accY: 0});
+	}
+	
+	
+	//Tabs Box
+	if($('.tabs-box').length){
+		$('.tabs-box .tab-buttons .tab-btn').on('click', function(e) {
+			e.preventDefault();
+			var target = $($(this).attr('data-tab'));
+			
+			if ($(target).is(':visible')){
+				return false;
+			}else{
+				target.parents('.tabs-box').find('.tab-buttons').find('.tab-btn').removeClass('active-btn');
+				$(this).addClass('active-btn');
+				target.parents('.tabs-box').find('.tabs-content').find('.tab').fadeOut(0);
+				target.parents('.tabs-box').find('.tabs-content').find('.tab').removeClass('active-tab');
+				$(target).fadeIn(300);
+				$(target).addClass('active-tab');
+			}
+		});
+	}
+	
+	
+	//Event Countdown Timer
+	if($('.time-countdown').length){  
+		$('.time-countdown').each(function() {
+		var $this = $(this), finalDate = $(this).data('countdown');
+		$this.countdown(finalDate, function(event) {
+			var $this = $(this).html(event.strftime('' + '<div class="counter-column"><span class="count">%D</span><span class="unit">Days</div></div> ' + '<div class="counter-column"><span class="count">%H</span><span class="unit">Hours</div></div>  ' + '<div class="counter-column"><span class="count">%M</span><span class="unit">Mins</div></div>  ' + '<div class="counter-column"><span class="count">%S</span><span class="unit">SECS</div></div>'));
+		});
+	 });
+	}
+	
+	
+	//Custom Seclect Box
+	if($('.custom-select-box').length){
+		$('.custom-select-box').selectmenu().selectmenu('menuWidget').addClass('overflow');
+	}
+	
+	
+	//Fact Counter + Text Count
+	if($('.count-box').length){
+		$('.count-box').appear(function(){
+	
+			var $t = $(this),
+				n = $t.find(".count-text").attr("data-stop"),
+				r = parseInt($t.find(".count-text").attr("data-speed"), 10);
+				
+			if (!$t.hasClass("counted")) {
+				$t.addClass("counted");
+				$({
+					countNum: $t.find(".count-text").text()
+				}).animate({
+					countNum: n
+				}, {
+					duration: r,
+					easing: "linear",
+					step: function() {
+						$t.find(".count-text").text(Math.floor(this.countNum));
+					},
+					complete: function() {
+						$t.find(".count-text").text(this.countNum);
+					}
+				});
+			}
+			
+		},{accY: 0});
+	}
+	
+	
+	//Sponsors Carousel
+	if ($('.sponsors-carousel').length) {
+		$('.sponsors-carousel').owlCarousel({
+			loop:true,
+			margin:0,
+			nav:true,
+			smartSpeed: 500,
+			autoplay: 5000,
+			navText: [ '<span class="fa fa-angle-left"></span>', '<span class="fa fa-angle-right"></span>' ],
+			responsive:{
+				0:{
+					items:1
+				},
+				600:{
+					items:2
+				},
+				800:{
+					items:3
+				},
+				1024:{
+					items:4
+				},
+				1200:{
+					items:4
+				}
+			}
+		});    		
+	}
+
+	
+	//Sortable Masonary with Filters
+	function enableMasonry() {
+		if($('.sortable-masonry').length){
+	
+			var winDow = $(window);
+			// Needed variables
+			var $container=$('.sortable-masonry .items-container');
+			var $filter=$('.filter-btns');
+	
+			$container.isotope({
+				filter:'*',
+				 masonry: {
+					columnWidth : 1
+				 },
+				animationOptions:{
+					duration:500,
+					easing:'linear'
+				}
+			});
+			
+	
+			// Isotope Filter 
+			$filter.find('li').on('click', function(){
+				var selector = $(this).attr('data-filter');
+	
+				try {
+					$container.isotope({ 
+						filter	: selector,
+						animationOptions: {
+							duration: 500,
+							easing	: 'linear',
+							queue	: false
+						}
+					});
+				} catch(err) {
+	
+				}
+				return false;
+			});
+	
+	
+			winDow.bind('resize', function(){
+				var selector = $filter.find('li.active').attr('data-filter');
+
+				$container.isotope({ 
+					filter	: selector,
+					animationOptions: {
+						duration: 500,
+						easing	: 'linear',
+						queue	: false
+					}
+				});
+			});
+	
+	
+			var filterItemA	= $('.filter-btns li');
+	
+			filterItemA.on('click', function(){
+				var $this = $(this);
+				if ( !$this.hasClass('active')) {
+					filterItemA.removeClass('active');
+					$this.addClass('active');
+				}
+			});
+		}
+	}
+	
+	enableMasonry();
+	
+	
+	
+	//Single Item Carousel
+	if ($('.single-item-carousel').length) {
+		$('.single-item-carousel').owlCarousel({
+			loop:true,
+			margin:30,
+			nav:true,
+			smartSpeed: 700,
+			autoplay: 4000,
+			navText: [ '<span class="fa fa-angle-left"></span>', '<span class="fa fa-angle-right"></span>' ],
+			responsive:{
+				0:{
+					items:1
+				},
+				600:{
+					items:1
+				},
+				800:{
+					items:1
+				},
+				1024:{
+					items:1
+				},
+				1200:{
+					items:1
+				}
+			}
+		});    		
+	}
+	
+	
+	
+	//Three Item Carousel
+	if ($('.three-item-carousel').length) {
+		$('.three-item-carousel').owlCarousel({
+			loop:true,
+			margin:8,
+			nav:true,
+			smartSpeed: 700,
+			autoplay: 4000,
+			navText: [ '<span class="fa fa-angle-left"></span>', '<span class="fa fa-angle-right"></span>' ],
+			responsive:{
+				0:{
+					items:1
+				},
+				600:{
+					items:1
+				},
+				800:{
+					items:2
+				},
+				1024:{
+					items:3
+				},
+				1200:{
+					items:3
+				}
+			}
+		});    		
+	}
+	
+	
+	
+	//Four Item Carousel
+	if ($('.four-item-carousel').length) {
+		$('.four-item-carousel').owlCarousel({
+			loop:true,
+			margin:30,
+			nav:true,
+			smartSpeed: 700,
+			autoplay: 4000,
+			navText: [ '<span class="fa fa-angle-left"></span>', '<span class="fa fa-angle-right"></span>' ],
+			responsive:{
+				0:{
+					items:1
+				},
+				600:{
+					items:2
+				},
+				800:{
+					items:2
+				},
+				1024:{
+					items:3
+				},
+				1200:{
+					items:4
+				}
+			}
+		});    		
+	}
+	
+	
+	//LightBox / Fancybox
+	if($('.lightbox-image').length) {
+		$('.lightbox-image').fancybox({
+			openEffect  : 'fade',
+			closeEffect : 'fade',
+			helpers : {
+				media : {}
+			}
+		});
+	}
+	
+	
+	//Contact Form Validation
+	if($('#contact-form').length){
+		$('#contact-form').validate({
+			rules: {
+				name: {
+					required: true
+				},
+				email: {
+					required: true,
+					email: true
+				},
+				subject: {
+					required: true
+				},
+				message: {
+					required: true
+				}
+			}
+		});
+	}
+	
+	
+	//Gallery Filters
+	if($('.filter-list').length){
+		$('.filter-list').mixItUp({});
+	}
+	
+	
+	// Scroll to a Specific Div
+	if($('.scroll-to-target').length){
+		$(".scroll-to-target").on('click', function() {
+			var target = $(this).attr('data-target');
+		   // animate
+		   $('html, body').animate({
+			   scrollTop: $(target).offset().top
+			 }, 1500);
+	
+		});
+	}
+	
+	
+	// Elements Animation
+	if($('.wow').length){
+		var wow = new WOW(
+		  {
+			boxClass:     'wow',      // animated element css class (default is wow)
+			animateClass: 'animated', // animation css class (default is animated)
+			offset:       0,          // distance to the element when triggering the animation (default is 0)
+			mobile:       false,       // trigger animations on mobile devices (default is true)
+			live:         true       // act on asynchronously loaded content (default is true)
+		  }
+		);
+		wow.init();
+	}
+
+
+/* ==========================================================================
+   When document is Scrollig, do
+   ========================================================================== */
+	
+	$(window).on('scroll', function() {
+		headerStyle();
+	});
+	
+/* ==========================================================================
+   When document is loading, do
+   ========================================================================== */
+	
+	$(window).on('load', function() {
+		handlePreloader();
+		enableMasonry();
+	});	
+
+})(window.jQuery);
